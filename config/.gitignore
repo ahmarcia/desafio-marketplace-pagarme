@@ -1,0 +1,5 @@
+*
+!app.php
+!database-default.php
+!settings-default.php
+!.gitignore
