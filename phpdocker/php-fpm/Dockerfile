@@ -14,3 +14,4 @@ RUN apt-get update \
 # Install composer
 RUN composer global require hirak/prestissimo --no-interaction \
 
+RUN chmod -R 777 /var/www/logs/

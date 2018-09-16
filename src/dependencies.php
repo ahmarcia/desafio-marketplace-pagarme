@@ -1,6 +1,10 @@
 <?php
 // DIC configuration
 
+use App\Helpers\CheckoutHelper;
+use App\Model\OrdersModel;
+use App\Model\UsersModel;
+
 $container = $app->getContainer();
 
 // view renderer
@@ -18,4 +22,21 @@ $container['logger'] = function ($c) {
     $logger->pushHandler(new Monolog\Handler\StreamHandler($settings['path'], $settings['level']));
 
     return $logger;
+};
+
+// pagar.me
+$container['pagarme'] = function ($c) {
+    $apiKey = $c['settings']['api_key'];
+
+    return new \PagarMe\Sdk\PagarMe($apiKey);
+};
+
+// models
+$container['Users'] = function () {
+    return new UsersModel();
+};
+
+//helpers
+$container['checkoutHelp'] = function ($c) {
+    return new CheckoutHelper($c->pagarme);
 };
