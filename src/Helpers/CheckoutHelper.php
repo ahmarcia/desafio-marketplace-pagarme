@@ -9,12 +9,12 @@
 namespace App\Helpers;
 
 use \PagarMe\Sdk\Customer\Customer;
-use PagarMe\Sdk\PagarMe;
+use \PagarMe\Sdk\SplitRule\SplitRuleCollection;
 
 class CheckoutHelper
 {
     /**
-     * @var PagarMe
+     * @var \PagarMe\Sdk\PagarMe
      */
     protected $PagarMe;
 
@@ -31,6 +31,8 @@ class CheckoutHelper
     /**
      * Define transaction
      *
+     * @todo obter opção de capturar o valor do pagamento do arquivo de configuração
+     *
      * @param array $cart User and cart data
      * @param array $card Data payment card
      *
@@ -43,10 +45,13 @@ class CheckoutHelper
             $this->createCard($card),
             $this->createCustumer($cart),
             $card['installments'],
-            true, // obter opção de capturar o valor do pagamento do arquivo de configuração
+            true,
             null,
             $this->defineMetadata($cart['items']),
-            [ 'async' => false ]
+            [
+                'async' => false,
+                'split_rules' => $this->getSplitRules($cart['items'])
+            ]
         );
     }
 
@@ -116,9 +121,67 @@ class CheckoutHelper
         $metadata = [];
 
         foreach ($items as $item) {
-            $metadata[$item['id']] = $item['name'];
+            $metadata[] = [
+                'id' => $item['id'],
+                'name' => $item['name']
+            ];
         }
 
         return json_encode($metadata);
+    }
+
+    /**
+     * Get split rules
+     *
+     * @param array $items List items cart
+     *
+     * @return array|SplitRuleCollection
+     */
+    private function getSplitRules($items)
+    {
+        $splitRules = new SplitRuleCollection();
+        $amountMartplace = 0;
+
+        foreach ($items as $item) {
+            if (isset($item['seller'])) {
+                $recipient = $this->PagarMe->recipient()->get($item['seller']['code_split']);
+                $value = $item['price'] * $item['seller']['fee'];
+                $amountMartplace += $item['price'] - $value;
+
+                $splitRules[] = $this->PagarMe->splitRule()->monetaryRule(
+                    $value,
+                    $recipient,
+                    false,
+                    true
+                );
+            } else {
+                $amountMartplace += $item['price'];
+            }
+        }
+
+        if ($splitRules->count() == 0) {
+            return null;
+        }
+
+        $splitRules[] = $this->PagarMe->splitRule()->monetaryRule(
+            $amountMartplace,
+            $this->getMarketplaceRecipient(),
+            true,
+            true
+        );
+
+        return $splitRules;
+    }
+
+    /**
+     * Get marketplace recient
+     *
+     * @todo obter a identificação da conta do arquivo de configuração
+     *
+     * @return \PagarMe\Sdk\Recipient\Recipient
+     */
+    private function getMarketplaceRecipient()
+    {
+        return $this->PagarMe->recipient()->get('re_cjlv2wcqt00ei3o6d9qeqhgl5');
     }
 }

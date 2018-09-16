@@ -42,11 +42,7 @@ class UsersModel
                     'name' => 'Darth Vader',
                     'description' => 'Fantasia do Darth Vader',
                     'price' => 12500,
-                    'seller' => [
-                        'id' => 1,
-                        'name' => 'Maria Barros',
-                        'code_split' => 0
-                    ]
+                    'seller' => null
                 ],
                 [
                     'id' => 101,
@@ -56,7 +52,20 @@ class UsersModel
                     'seller' => [
                         'id' => 1,
                         'name' => 'João Thiago Samuel Cavalcanti',
-                        'code_split' => 0
+                        'code_split' => 're_cjm5290mz00dgi96d8vx3u277',
+                        'fee' => 0.85,
+                        'bank' => [
+                            'id' => 2,
+                            'code' => 17900015,
+                            'bank_code' => '342',
+                            'agencia' => '0933',
+                            'agencia_dv' => '6',
+                            'conta' => '58055',
+                            'type' => 'conta_corrente',
+                            'conta_dv' => '1',
+                            'document_number' => '13562704097',
+                            'legal_name' => 'João Thiago Samuel Cavalcanti'
+                        ]
                     ]
                 ],
                 [
@@ -67,7 +76,20 @@ class UsersModel
                     'seller' => [
                         'id' => 1,
                         'name' => 'César Anthony João Martins',
-                        'code_split' => 0
+                        'code_split' => 're_cjm52anxs00d4zp6e4z0h3d3p',
+                        'fee' => 0.85,
+                        'bank' => [
+                            'id' => 1,
+                            'code' => 17900016,
+                            'bank_code' => '343',
+                            'agencia' => '0934',
+                            'agencia_dv' => '7',
+                            'conta' => '58056',
+                            'type' => 'conta_corrente',
+                            'conta_dv' => '1',
+                            'document_number' => '68911379000',
+                            'legal_name' => 'César Anthony João Martins'
+                        ]
                     ]
                 ]
             ]
