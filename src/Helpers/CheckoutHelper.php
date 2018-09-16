@@ -40,8 +40,11 @@ class CheckoutHelper
      */
     public function getTransaction($cart, $card)
     {
+        $amount = 0;
+        $splitRule = $this->getSplitRules($cart['items'], $amount);
+        
         return $this->PagarMe->transaction()->creditCardTransaction(
-            $this->getAmount($cart['items']),
+            $amount,
             $this->createCard($card),
             $this->createCustumer($cart),
             $card['installments'],
@@ -50,27 +53,9 @@ class CheckoutHelper
             $this->defineMetadata($cart['items']),
             [
                 'async' => false,
-                'split_rules' => $this->getSplitRules($cart['items'])
+                'split_rules' => $splitRule
             ]
         );
-    }
-
-    /**
-     * Get amount cart
-     *
-     * @param array $items List items cart
-     *
-     * @return int
-     */
-    private function getAmount($items)
-    {
-        $amount  = 0;
-
-        foreach ($items as $item) {
-            $amount += $item['price'];
-        }
-
-        return $amount;
     }
 
     /**
@@ -137,38 +122,60 @@ class CheckoutHelper
      *
      * @return array|SplitRuleCollection
      */
-    private function getSplitRules($items)
+    private function getSplitRules($items, &$amount)
     {
-        $splitRules = new SplitRuleCollection();
-        $amountMartplace = 0;
-
+        $shipping = 4500;
+        $itemsSellers = [];
+        $amountMarketplace = 0;
+        $marketplaceItem = false;
+        
         foreach ($items as $item) {
-            if (isset($item['seller'])) {
-                $recipient = $this->PagarMe->recipient()->get($item['seller']['code_split']);
+            if (isset($item['seller']) && !is_null($item['seller'])) {
+                $sellerId = $item['seller']['id'];
                 $value = $item['price'] * $item['seller']['fee'];
-                $amountMartplace += $item['price'] - $value;
+                $amountMarketplace += $item['price'] - $value;
 
-                $splitRules[] = $this->PagarMe->splitRule()->monetaryRule(
-                    $value,
-                    $recipient,
-                    false,
-                    true
-                );
+                if (array_key_exists($sellerId, $itemsSellers))  {
+                    $itemsSellers[$sellerId]['amount'] += $value;
+                } else {
+                    $itemsSellers[$sellerId] =[
+                        'amount' => $value + $shipping,
+                        'code_split' => $item['seller']['code_split']
+                    ];
+                }
             } else {
-                $amountMartplace += $item['price'];
+                $amountMarketplace += $item['price'];
+                if (!$marketplaceItem) {
+                    $amountMarketplace += $shipping;
+                    $marketplaceItem = true;
+                }
             }
         }
 
-        if ($splitRules->count() == 0) {
+        if (empty($itemsSellers)) {
             return null;
         }
 
+        $splitRules = new SplitRuleCollection();
+        foreach ($itemsSellers as $seller) {
+            $recipient = $this->PagarMe->recipient()->get($seller['code_split']);
+            $amount += $seller['amount'];
+
+            $splitRules[] = $this->PagarMe->splitRule()->monetaryRule(
+                $seller['amount'],
+                $recipient,
+                false,
+                true
+            );
+        }
+
         $splitRules[] = $this->PagarMe->splitRule()->monetaryRule(
-            $amountMartplace,
+            $amountMarketplace,
             $this->getMarketplaceRecipient(),
             true,
             true
         );
+        $amount += $amountMarketplace;
 
         return $splitRules;
     }

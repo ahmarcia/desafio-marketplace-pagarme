@@ -74,7 +74,31 @@ class UsersModel
                     'description' => 'Máscara de Cavalo',
                     'price' => 15000,
                     'seller' => [
-                        'id' => 1,
+                        'id' => 2,
+                        'name' => 'César Anthony João Martins',
+                        'code_split' => 're_cjm52anxs00d4zp6e4z0h3d3p',
+                        'fee' => 0.85,
+                        'bank' => [
+                            'id' => 1,
+                            'code' => 17900016,
+                            'bank_code' => '343',
+                            'agencia' => '0934',
+                            'agencia_dv' => '7',
+                            'conta' => '58056',
+                            'type' => 'conta_corrente',
+                            'conta_dv' => '1',
+                            'document_number' => '68911379000',
+                            'legal_name' => 'César Anthony João Martins'
+                        ]
+                    ]
+                ],
+                [
+                    'id' => 103,
+                    'name' => 'Máscara de Cavalo 2',
+                    'description' => 'Máscara de Cavalo 2',
+                    'price' => 10000,
+                    'seller' => [
+                        'id' => 2,
                         'name' => 'César Anthony João Martins',
                         'code_split' => 're_cjm52anxs00d4zp6e4z0h3d3p',
                         'fee' => 0.85,
