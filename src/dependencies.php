@@ -2,7 +2,7 @@
 // DIC configuration
 
 use App\Helpers\CheckoutHelper;
-use App\Model\OrdersModel;
+use App\Model\ProductsModel;
 use App\Model\UsersModel;
 
 $container = $app->getContainer();
@@ -34,6 +34,9 @@ $container['pagarme'] = function ($c) {
 // models
 $container['Users'] = function () {
     return new UsersModel();
+};
+$container['Products'] = function () {
+    return new ProductsModel();
 };
 
 //helpers
