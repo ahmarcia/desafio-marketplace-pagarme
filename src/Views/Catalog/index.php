@@ -3,8 +3,7 @@
  * @var array $products
  */
 
-include(__DIR__ . '/../Layout/head.php');
-?>
+include(__DIR__ . '/../Layout/head.php'); ?>
 
 <main class="container">
     <section class="movies" id="movies">
@@ -25,7 +24,12 @@ include(__DIR__ . '/../Layout/head.php');
                                 <small><?= !is_null($product['seller']) ? $product['seller']['name'] : '' ?></small>
                             </p>
                             <p class="tagline card-text text-right"><?= 'R$' . $product['price'] / 100 ?></p>
-                            <a href="<?= '/cart/add/' . $product['id']?> " class="btn btn-primary btn-block"><i class="fa fa-eye"></i> Adicionar ao carrinho</a>
+                            <button
+                                id="<?= $product['id']?>" class="btn btn-primary btn-block"
+                                onclick="addCart(<?= $product['id']?>)"
+                            >
+                                <i class="fa fa-eye"></i> Adicionar ao carrinho
+                            </button>
                         </div>
                     </article>
                 </div>
@@ -34,6 +38,15 @@ include(__DIR__ . '/../Layout/head.php');
     </section>
 </main>
 
+<script>
+    function addCart(productId) {
+        var form = document.createElement('form');
+        document.body.appendChild(form);
+
+        form.method = 'POST';
+        form.action = '/cart/add/' + productId;
+        form.submit();
+    }
+</script>
 
 <?php include(__DIR__ . '/../Layout/footer.php'); ?>
-'

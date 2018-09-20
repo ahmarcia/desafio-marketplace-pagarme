@@ -5,13 +5,14 @@ namespace App\Controllers;
 use App\Kernel\ControllerAbstract;
 use Interop\Container\ContainerInterface;
 
+use Slim\Http\Request;
+use Slim\Http\Response;
+
 /**
- * Class CheckoutController
+ * Class CartController
  * @package App\Controllers
- *
- * @property \App\Helpers\CheckoutHelper $checkoutHelp
  */
-class CheckoutController extends ControllerAbstract
+class CartController extends ControllerAbstract
 {
     /**
      * CheckoutController constructor.
@@ -26,18 +27,11 @@ class CheckoutController extends ControllerAbstract
     }
 
     /**
-     * SDK pagar.me
+     * Product Model
      *
-     * @var \PagarMe\Sdk\PagarMe
+     * @var \App\Model\ProductsModel;
      */
-    protected $PagarMe;
-
-    /**
-     * Model Users
-     *
-     * @var \App\Model\UsersModel;
-     */
-    protected $Users;
+    protected $Products;
 
     /**
      * List of helpers
@@ -45,7 +39,6 @@ class CheckoutController extends ControllerAbstract
      * @var array
      */
     protected $Helpers = [
-        'checkoutHelp',
         'session'
     ];
 
@@ -56,8 +49,7 @@ class CheckoutController extends ControllerAbstract
      */
     public function initialize()
     {
-        $this->PagarMe = $this->getContainer()->pagarme;
-        $this->Users = $this->getContainer()->Users;
+        $this->Products = $this->getContainer()->Products;
 
         foreach ($this->Helpers as $helper) {
             $this->{$helper} = $this->getContainer()->{$helper};
@@ -71,19 +63,29 @@ class CheckoutController extends ControllerAbstract
      */
     public function index()
     {
-        $card = [
-            'number' => '4242424242424242',
-            'name' => 'Marcia Lima',
-            'cvv' => '0722',
-            'installments' => 1
-        ];
-        $user = $this->Users->get();
-        $user['cart'] = $this->session->getAuth()['cart'];
-        $transaction = $this->checkoutHelp->getTransaction($user, $card);
+        $user = $this->session->getAuth('User');
 
-        $user['cart'] = [];
+        return $this->render('Cart/index.php', compact('user'));
+    }
+
+    /**
+     * Add action
+     *
+     * @return string
+     */
+    public function add(Request $request, Response $response, array $args)
+    {
+        $user = $this->session->getAuth('User');
+
+        if (!array_key_exists($args['id'], $user['cart'])) {
+            $product = $this->Products->get($args['id']);
+
+            if ($product) {
+                $user['cart'][$args['id']] = $product;
+            }
+        }
         $this->session->set('User', $user);
 
-        return $this->render('Checkout/index.php', ['transaction' => $transaction]);
+        return $response->withRedirect('/cart', 200);
     }
 }

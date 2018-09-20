@@ -8,6 +8,8 @@ use Interop\Container\ContainerInterface;
 /**
  * Class CatalogController
  * @package App\Controllers
+ *
+ * @property \App\Model\ProductsModel;
  */
 class CatalogController extends ControllerAbstract
 {

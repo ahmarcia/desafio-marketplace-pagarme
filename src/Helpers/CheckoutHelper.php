@@ -41,7 +41,7 @@ class CheckoutHelper
     public function getTransaction($cart, $card)
     {
         $amount = 0;
-        $splitRule = $this->getSplitRules($cart['items'], $amount);
+        $splitRule = $this->getSplitRules($cart['cart'], $amount);
         
         return $this->PagarMe->transaction()->creditCardTransaction(
             $amount,
@@ -50,7 +50,7 @@ class CheckoutHelper
             $card['installments'],
             true,
             null,
-            $this->defineMetadata($cart['items']),
+            $this->defineMetadata($cart['cart']),
             [
                 'async' => false,
                 'split_rules' => $splitRule

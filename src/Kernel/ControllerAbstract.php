@@ -28,7 +28,6 @@ abstract class ControllerAbstract
         unset($container);
     }
 
-
     /**
      * Get Slim Container
      *

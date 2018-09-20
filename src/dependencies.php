@@ -2,21 +2,23 @@
 // DIC configuration
 
 use App\Helpers\CheckoutHelper;
+use App\Helpers\Session;
 use App\Model\ProductsModel;
 use App\Model\UsersModel;
+use Slim\Container;
 
 $container = $app->getContainer();
 
 // view renderer
-$container['renderer'] = function ($c) {
-    $settings = $c->get('settings')['renderer'];
+$container['renderer'] = function (Container $container) {
+    $settings = $container->get('settings')['renderer'];
 
     return new Slim\Views\PhpRenderer($settings['template_path']);
 };
 
 // monolog
-$container['logger'] = function ($c) {
-    $settings = $c->get('settings')['logger'];
+$container['logger'] = function (Container $container) {
+    $settings = $container->get('settings')['logger'];
     $logger = new Monolog\Logger($settings['name']);
     $logger->pushProcessor(new Monolog\Processor\UidProcessor());
     $logger->pushHandler(new Monolog\Handler\StreamHandler($settings['path'], $settings['level']));
@@ -25,10 +27,15 @@ $container['logger'] = function ($c) {
 };
 
 // pagar.me
-$container['pagarme'] = function ($c) {
-    $apiKey = $c['settings']['api_key'];
+$container['pagarme'] = function (Container $container) {
+    $apiKey = $container->settings['api_key'];
 
     return new \PagarMe\Sdk\PagarMe($apiKey);
+};
+
+// session
+$container['session'] = function () {
+    return new Session();
 };
 
 // models
@@ -40,6 +47,6 @@ $container['Products'] = function () {
 };
 
 //helpers
-$container['checkoutHelp'] = function ($c) {
-    return new CheckoutHelper($c->pagarme);
+$container['checkoutHelp'] = function (Container $container) {
+    return new CheckoutHelper($container->pagarme);
 };
