@@ -78,8 +78,12 @@ class CartController extends ControllerAbstract
     public function index()
     {
         $user = $this->session->getAuth('User');
+        $amount = 0;
+        $shipping = 4500;
+        $user['marketplace'] = $this->checkoutHelp->getItemsMarketplace($user['cart'], $amount);
+        $user['seller'] = $this->checkoutHelp->getItemsSeller($user['cart'], $amount);
 
-        return $this->render('Cart/index.php', compact('user'));
+        return $this->render('Cart/index.php', compact('user', 'shipping', 'amount'));
     }
 
     /**

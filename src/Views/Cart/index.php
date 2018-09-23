@@ -1,6 +1,8 @@
 <?php
 /**
  * @var array $user
+ * @var int   $shipping
+ * @var int   $amount
  */
 
 include(__DIR__ . '/../Layout/head.php'); ?>
@@ -17,18 +19,55 @@ include(__DIR__ . '/../Layout/head.php'); ?>
                 <span class="badge badge-secondary badge-pill"><?= count($user['cart']) ?></span>
             </h4>
             <ul class="list-group mb-3">
-                <?php foreach ($user['cart'] as $product): ?>
-                    <li class="list-group-item d-flex justify-content-between lh-condensed">
-                        <div>
-                            <h6 class="my-0"><?= $product['name'] ?></h6>
-                            <small class="text-muted"><?= $product['description'] ?></small>
+                <?php if (count($user['marketplace']) > 0) :
+                    foreach ($user['marketplace'] as $product): ?>
+                        <li class="list-group-item d-flex justify-content-between lh-condensed">
+                            <div>
+                                <h6 class="my-0"><?= $product['name'] ?></h6>
+                                <small class="text-muted"><?= $product['description'] ?></small>
+                            </div>
+                            <span class="text-muted">
+                                R$ <?= number_format($product['price'] / 100, 2, ',', '') ?>
+                            </span>
+                        </li>
+                    <?php endforeach; ?>
+                    <li class="list-group-item d-flex justify-content-between bg-light">
+                        <div class="text-success">
+                            <h6 class="my-0">Frete</h6>
                         </div>
-                        <span class="text-muted">R$ <?= $product['price'] / 100 ?></span>
+                        <span class="text-success">
+                                R$ <?= number_format($shipping / 100, 2, ',', '') ?>
+                        </span>
                     </li>
-                <?php endforeach; ?>
+                <?php endif; ?>
+
+                <?php if (count($user['seller']) > 0) :
+                    foreach ($user['seller'] as $seller):
+                        foreach ($seller as $product): ?>
+                            <li class="list-group-item d-flex justify-content-between lh-condensed">
+                                <div>
+                                    <h6 class="my-0"><?= $product['name'] ?></h6>
+                                    <small class="text-muted"><?= $product['description'] ?></small>
+                                </div>
+                                <span class="text-muted">
+                                    R$ <?= number_format($product['price'] / 100, 2, ',', '') ?>
+                                </span>
+                            </li>
+                        <?php endforeach; ?>
+                        <li class="list-group-item d-flex justify-content-between bg-light">
+                            <div class="text-success">
+                                <h6 class="my-0">Frete</h6>
+                                <small>Vendedor: <?= $seller[0]['seller']['name'] ?></small>
+                            </div>
+                            <span class="text-success">
+                                R$ <?= number_format($shipping / 100, 2, ',', '') ?>
+                            </span>
+                        </li>
+                    <?php endforeach;
+                endif; ?>
                 <li class="list-group-item d-flex justify-content-between">
                     <span>Total (BRL)</span>
-                    <strong>R$ <?= array_sum(array_column($user['cart'], 'price')) / 100 ?></strong>
+                    <strong id="amount">R$ <?= number_format($amount / 100, 2, ',', '') ?></strong>
                 </li>
             </ul>
         </div>
@@ -176,6 +215,7 @@ include(__DIR__ . '/../Layout/head.php'); ?>
                         </div>
                     </div>
                 </div>
+                <hr class="mb-4">
 
                 <h4 class="mb-3">Pagamento</h4>
                 <div class="row">
@@ -208,16 +248,6 @@ include(__DIR__ . '/../Layout/head.php'); ?>
                         <input type="text" class="form-control" name="card[cvv]" id="card-cvv" value="0722" required>
                         <div class="invalid-feedback">
                             Security code required
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3 d-none">
-                        <label for="card-installments">Parcelas</label>
-                        <select class="custom-select d-block w-100" name="card[installments]" id="card-installments" required>
-                            <option value=""></option>
-                            <option value="1" selected>1 parcela</option>
-                        </select>
-                        <div class="invalid-feedback">
-                            Please select a valid country.
                         </div>
                     </div>
                 </div>

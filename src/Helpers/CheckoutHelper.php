@@ -13,6 +13,8 @@ use \PagarMe\Sdk\SplitRule\SplitRuleCollection;
 
 class CheckoutHelper
 {
+    const SHIPPING = 4500;
+
     /**
      * @var \PagarMe\Sdk\PagarMe
      */
@@ -42,12 +44,12 @@ class CheckoutHelper
     {
         $amount = 0;
         $splitRule = $this->getSplitRules($user['cart'], $amount);
-        
+
         return $this->PagarMe->transaction()->creditCardTransaction(
             $amount,
             $this->createCard($card),
             $this->createCustumer($user),
-            $card['installments'],
+            1,
             true,
             null,
             $this->defineMetadata($user['cart']),
@@ -124,7 +126,7 @@ class CheckoutHelper
      */
     private function getSplitRules($items, &$amount)
     {
-        $shipping = 4500;
+        $shipping = self::SHIPPING;
         $itemsSellers = [];
         $amountMarketplace = 0;
         $marketplaceItem = false;
@@ -152,6 +154,7 @@ class CheckoutHelper
             }
         }
 
+        $amount += $amountMarketplace;
         if (empty($itemsSellers)) {
             return null;
         }
@@ -175,7 +178,6 @@ class CheckoutHelper
             true,
             true
         );
-        $amount += $amountMarketplace;
 
         return $splitRules;
     }
@@ -190,5 +192,54 @@ class CheckoutHelper
     private function getMarketplaceRecipient()
     {
         return $this->PagarMe->recipient()->get('re_cjlv2wcqt00ei3o6d9qeqhgl5');
+    }
+
+    /**
+     * Get seller items cart
+     *
+     * @param array $items  Items user cart
+     * @param int   $amount Value user cart
+     *
+     * @return array
+     */
+    public function getItemsSeller($items, &$amount)
+    {
+        $itemsSellers = [];
+        foreach ($items as $item) {
+            if (is_array($item['seller']) && isset($item['seller']['id'])) {
+                if (!isset($itemsSellers[$item['seller']['id']])) {
+                    $amount += self::SHIPPING;
+                }
+                $itemsSellers[$item['seller']['id']][] = $item;
+                $amount += $item['price'];
+            }
+        }
+
+        return $itemsSellers;
+    }
+
+    /**
+     * get marketplace items cart
+     *
+     * @param array $items  Items user cart
+     * @param int   $amount Value user cart
+     *
+     * @return array
+     */
+    public function getItemsMarketplace($items, &$amount)
+    {
+        $itemsMarketplace = [];
+        foreach ($items as $item) {
+            if (!is_array($item['seller']) || !isset($item['seller']['id'])) {
+                $itemsMarketplace[] = $item;
+                $amount += $item['price'];
+            }
+        }
+
+        if (count($itemsMarketplace) > 0) {
+            $amount += self::SHIPPING;
+        }
+
+        return $itemsMarketplace;
     }
 }
