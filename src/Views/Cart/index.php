@@ -252,7 +252,9 @@ include(__DIR__ . '/../Layout/head.php'); ?>
                     </div>
                 </div>
                 <hr class="mb-4">
-                <button class="btn btn-primary btn-lg btn-block" type="submit">Continue to checkout</button>
+                <?php if ($amount > 0): ?>
+                    <button class="btn btn-primary btn-lg btn-block" type="submit">Finalizar pedido</button>
+                <?php endif; ?>
             </form>
         </div>
     </div>

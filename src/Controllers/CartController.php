@@ -118,11 +118,15 @@ class CartController extends ControllerAbstract
         $user = $this->requestHelp->getData('user');
         $user['cart'] = $this->session->getAuth()['cart'];
         
-        $transaction = $this->checkoutHelp->getTransaction($user, $card);
+        try {
+            $transaction = $this->checkoutHelp->getTransaction($user, $card);
 
-        $user['cart'] = [];
-        $this->session->set('User', $user);
+            $user['cart'] = [];
+            $this->session->set('User', $user);
 
-        return $this->render('cart/checkout.php', ['transaction' => $transaction]);
+            return $this->render('cart/checkout.php', ['transaction' => $transaction]);
+        } catch (\PagarMe\Sdk\ClientException $exception) {
+            return $this->render('cart/checkout-fail.php', compact('exception'));
+        }
     }
 }

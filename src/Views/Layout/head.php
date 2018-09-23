@@ -9,8 +9,8 @@
     <title>Desafio pagar.me</title>
 
     <!-- Custom styles for this template -->
-    <link rel="stylesheet" href="assets/css/bootstrap.min.css" >
-    <link rel="stylesheet" href="assets/css/product.css" >
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css" >
+    <link rel="stylesheet" href="/assets/css/product.css" >
 </head>
 <body>
     <nav class="site-header sticky-top py-1">
