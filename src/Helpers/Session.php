@@ -8,8 +8,6 @@ namespace App\Helpers;
  */
 class Session
 {
-    private $cookieTime;
-
     /**
      * Session constructor.
      */
@@ -17,7 +15,6 @@ class Session
     {
         session_start();
         session_cache_limiter(false);
-        $this->cookieTime = strtotime('+30 days');
     }
 
     /**

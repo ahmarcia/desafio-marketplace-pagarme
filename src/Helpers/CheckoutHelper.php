@@ -33,24 +33,24 @@ class CheckoutHelper
      *
      * @todo obter opção de capturar o valor do pagamento do arquivo de configuração
      *
-     * @param array $cart User and cart data
+     * @param array $user User and cart data
      * @param array $card Data payment card
      *
      * @return \PagarMe\Sdk\Transaction\CreditCardTransaction
      */
-    public function getTransaction($cart, $card)
+    public function getTransaction($user, $card)
     {
         $amount = 0;
-        $splitRule = $this->getSplitRules($cart['cart'], $amount);
+        $splitRule = $this->getSplitRules($user['cart'], $amount);
         
         return $this->PagarMe->transaction()->creditCardTransaction(
             $amount,
             $this->createCard($card),
-            $this->createCustumer($cart),
+            $this->createCustumer($user),
             $card['installments'],
             true,
             null,
-            $this->defineMetadata($cart['cart']),
+            $this->defineMetadata($user['cart']),
             [
                 'async' => false,
                 'split_rules' => $splitRule

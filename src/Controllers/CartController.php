@@ -11,6 +11,10 @@ use Slim\Http\Response;
 /**
  * Class CartController
  * @package App\Controllers
+ *
+ * @property \App\Helpers\Session $session
+ * @property \App\Helpers\Request requestHelp
+ * @property \App\Helpers\CheckoutHelper $checkoutHelp
  */
 class CartController extends ControllerAbstract
 {
@@ -34,11 +38,20 @@ class CartController extends ControllerAbstract
     protected $Products;
 
     /**
+     * SDK pagar.me
+     *
+     * @var \PagarMe\Sdk\PagarMe
+     */
+    protected $PagarMe;
+
+    /**
      * List of helpers
      *
      * @var array
      */
     protected $Helpers = [
+        'checkoutHelp',
+        'requestHelp',
         'session'
     ];
 
@@ -50,6 +63,7 @@ class CartController extends ControllerAbstract
     public function initialize()
     {
         $this->Products = $this->getContainer()->Products;
+        $this->PagarMe = $this->getContainer()->pagarme;
 
         foreach ($this->Helpers as $helper) {
             $this->{$helper} = $this->getContainer()->{$helper};
@@ -87,5 +101,24 @@ class CartController extends ControllerAbstract
         $this->session->set('User', $user);
 
         return $response->withRedirect('/cart', 200);
+    }
+
+    /**
+     * Index Action
+     *
+     * @return string
+     */
+    public function checkout()
+    {
+        $card = $this->requestHelp->getData('card');
+        $user = $this->requestHelp->getData('user');
+        $user['cart'] = $this->session->getAuth()['cart'];
+        
+        $transaction = $this->checkoutHelp->getTransaction($user, $card);
+
+        $user['cart'] = [];
+        $this->session->set('User', $user);
+
+        return $this->render('cart/checkout.php', ['transaction' => $transaction]);
     }
 }

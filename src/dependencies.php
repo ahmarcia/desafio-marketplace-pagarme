@@ -3,8 +3,8 @@
 
 use App\Helpers\CheckoutHelper;
 use App\Helpers\Session;
+use App\Helpers\Request;
 use App\Model\ProductsModel;
-use App\Model\UsersModel;
 use Slim\Container;
 
 $container = $app->getContainer();
@@ -39,14 +39,16 @@ $container['session'] = function () {
 };
 
 // models
-$container['Users'] = function () {
-    return new UsersModel();
-};
 $container['Products'] = function () {
     return new ProductsModel();
 };
 
-//helpers
+// helpers
 $container['checkoutHelp'] = function (Container $container) {
     return new CheckoutHelper($container->pagarme);
+};
+
+// request
+$container['requestHelp'] = function () {
+    return new Request();
 };

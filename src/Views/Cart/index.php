@@ -7,7 +7,6 @@ include(__DIR__ . '/../Layout/head.php'); ?>
 
 <div class="container">
     <div class="py-5 text-center">
-        <img class="d-block mx-auto mb-4" src="../../assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
         <h2>Checkout</h2>
     </div>
 
@@ -15,7 +14,7 @@ include(__DIR__ . '/../Layout/head.php'); ?>
         <div class="col-md-4 order-md-2 mb-4">
             <h4 class="d-flex justify-content-between align-items-center mb-3">
                 <span class="text-muted">Carrinho</span>
-                <span class="badge badge-secondary badge-pill"><?= count($user['cart'])?></span>
+                <span class="badge badge-secondary badge-pill"><?= count($user['cart']) ?></span>
             </h4>
             <ul class="list-group mb-3">
                 <?php foreach ($user['cart'] as $product): ?>
@@ -34,127 +33,163 @@ include(__DIR__ . '/../Layout/head.php'); ?>
             </ul>
         </div>
         <div class="col-md-8 order-md-1">
-            <h4 class="mb-3">Billing address</h4>
-            <form class="needs-validation" novalidate>
+            <h4 class="mb-3">Seus dados</h4>
+            <form class="needs-validation" method="post" action="/cart/checkout">
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <label for="user-name">Nome</label>
+                        <input type="text" class="form-control" id="user-name" name="user[name]" required
+                               value="<?= isset($user['name']) ? $user['name'] : '' ?>" >
+                        <div class="invalid-feedback">
+                            Preencha o campo nome corretamente.
+                        </div>
+                    </div>
+                </div>
+
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="firstName">First name</label>
-                        <input type="text" class="form-control" id="firstName" placeholder="" value="" required>
+                        <label for="user-email">Email</label>
+                        <input type="email" class="form-control" id="user-email" name="user[email]"
+                               value="<?= isset($user['email']) ? $user['email'] : '' ?>" >
                         <div class="invalid-feedback">
-                            Valid first name is required.
+                            Preencha com um e-mail válido.
                         </div>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="lastName">Last name</label>
-                        <input type="text" class="form-control" id="lastName" placeholder="" value="" required>
+                        <label for="user-document-number">Documento</label>
+                        <input type="text" class="form-control" id="user-document-number"
+                               name="user[document_number]" required
+                               value="<?= isset($user['document_number']) ? $user['document_number'] : '' ?>" >
                         <div class="invalid-feedback">
-                            Valid last name is required.
+                            Preencha o CPF corretamente.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-2 mb-3">
+                        <label for="user-phone-ddd">DDD</label>
+                        <input type="text" class="form-control" id="user-phone-ddd" name="user[phone][ddd]" required
+                               value="<?= isset($user['phone']['ddd']) ? $user['phone']['ddd'] : '' ?>" >
+                        <div class="invalid-feedback">
+                            Preencha um DDD válido.
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="user-phone-number">Telefone</label>
+                        <input type="text" class="form-control" id="user-phone-number" name="user[phone][number]" required
+                               value="<?= isset($user['phone']['number']) ? $user['phone']['number'] : '' ?>" >
+                        <div class="invalid-feedback">
+                            Preencha o número de telefone corretamente.
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="user-birthday">Data de nascimento</label>
+                        <input type="text" class="form-control" id="user-birthday" name="user[birthday]" required
+                               value="<?= isset($user['birthday']) ? $user['birthday'] : '' ?>" >
+                        <div class="invalid-feedback">
+                            Preencha a data de nascimento corretamente.
                         </div>
                     </div>
                 </div>
 
                 <div class="mb-3">
-                    <label for="username">Username</label>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">@</span>
-                        </div>
-                        <input type="text" class="form-control" id="username" placeholder="Username" required>
-                        <div class="invalid-feedback" style="width: 100%;">
-                            Your username is required.
-                        </div>
+                    <label for="user-genre">Sexo</label><br/>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="user[genre]" id="user-genre-f"
+                               required <?= isset($user['genre']) && $user['genre'] == 'F' ? 'checked' : '' ?>>
+                        <label class="form-check-label" for="user-genre-f">Feminino</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="user[genre]" id="user-genre-m"
+                               required <?= isset($user['genre']) && $user['genre'] == 'M' ? 'checked' : '' ?>>
+                        <label class="form-check-label" for="user-genre-m">Masculino</label>
                     </div>
                 </div>
 
                 <div class="mb-3">
-                    <label for="email">Email <span class="text-muted">(Optional)</span></label>
-                    <input type="email" class="form-control" id="email" placeholder="you@example.com">
-                    <div class="invalid-feedback">
-                        Please enter a valid email address for shipping updates.
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <label for="address">Address</label>
-                    <input type="text" class="form-control" id="address" placeholder="1234 Main St" required>
+                    <label for="user-address-street">Rua</label>
+                    <input type="text" class="form-control" name="user[address][street]" id="user-address-street" required
+                           value="<?= isset($user['address']['street']) ? $user['address']['street'] : '' ?>" >
                     <div class="invalid-feedback">
                         Please enter your shipping address.
                     </div>
                 </div>
 
-                <div class="mb-3">
-                    <label for="address2">Address 2 <span class="text-muted">(Optional)</span></label>
-                    <input type="text" class="form-control" id="address2" placeholder="Apartment or suite">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="user-address-neighborhood">Bairro</label>
+                        <input type="text" class="form-control" name="user[address][neighborhood]" id="user-address-neighborhood" required
+                               value="<?= isset($user['address']['neighborhood']) ? $user['address']['neighborhood'] : '' ?>" >
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="user-address-complementary">Complemento</label>
+                        <input type="text" class="form-control" name="user[address][complementary]" id="user-address-complementary" required
+                               value="<?= isset($user['address']['complementary']) ? $user['address']['complementary'] : '' ?>" >
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label for="user-address-street-number">Número</label>
+                        <input type="text" class="form-control" name="user[address][street_number]" id="user-address-street-number" required
+                               value="<?= isset($user['address']['street_number']) ? $user['address']['street_number'] : '' ?>" >
+                        <div class="invalid-feedback">
+                            Please enter your shipping address.
+                        </div>
+                    </div>
                 </div>
 
                 <div class="row">
-                    <div class="col-md-5 mb-3">
-                        <label for="country">Country</label>
-                        <select class="custom-select d-block w-100" id="country" required>
-                            <option value="">Choose...</option>
-                            <option>United States</option>
-                        </select>
+                    <div class="col-md-3 mb-3">
+                        <label for="user-address-zipcode">CEP</label>
+                        <input type="text" class="form-control" name="user[address][zipcode]" id="user-address-zipcode" required
+                               value="<?= isset($user['address']['zipcode']) ? $user['address']['zipcode'] : '' ?>" >
+                        <div class="invalid-feedback">
+                            Zip code required.
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="user-address-city">Cidade</label>
+                        <input type="text" class="form-control" name="user[address][city]" id="user-address-city" required
+                               value="<?= isset($user['address']['city']) ? $user['address']['city'] : '' ?>" >
+
                         <div class="invalid-feedback">
                             Please select a valid country.
                         </div>
                     </div>
                     <div class="col-md-4 mb-3">
-                        <label for="state">State</label>
-                        <select class="custom-select d-block w-100" id="state" required>
-                            <option value="">Choose...</option>
-                            <option>California</option>
+                        <label for="user-address-country">País</label>
+                        <select class="custom-select d-block w-100" name="user[address][country]" id="user-address-country" required>
+                            <option value=""></option>
+                            <option value="Brasil" <?= isset($user['address']['country']) && $user['address']['country'] == 'Brasil' ? 'selected' : '' ?>>Brasil</option>
+                        </select>
+                        <div class="invalid-feedback">
+                            Please select a valid country.
+                        </div>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label for="state">Estado</label>
+                        <select class="custom-select d-block w-100" name="user[address][state]" id="state" required>
+                            <option value=""></option>
+                            <option value="SP" <?= isset($user['address']['state']) && $user['address']['state'] == 'SP' ? 'selected' : '' ?>>SP</option>
                         </select>
                         <div class="invalid-feedback">
                             Please provide a valid state.
                         </div>
                     </div>
-                    <div class="col-md-3 mb-3">
-                        <label for="zip">Zip</label>
-                        <input type="text" class="form-control" id="zip" placeholder="" required>
-                        <div class="invalid-feedback">
-                            Zip code required.
-                        </div>
-                    </div>
                 </div>
-                <hr class="mb-4">
-                <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="same-address">
-                    <label class="custom-control-label" for="same-address">Shipping address is the same as my billing address</label>
-                </div>
-                <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="save-info">
-                    <label class="custom-control-label" for="save-info">Save this information for next time</label>
-                </div>
-                <hr class="mb-4">
 
-                <h4 class="mb-3">Payment</h4>
-
-                <div class="d-block my-3">
-                    <div class="custom-control custom-radio">
-                        <input id="credit" name="paymentMethod" type="radio" class="custom-control-input" checked required>
-                        <label class="custom-control-label" for="credit">Credit card</label>
-                    </div>
-                    <div class="custom-control custom-radio">
-                        <input id="debit" name="paymentMethod" type="radio" class="custom-control-input" required>
-                        <label class="custom-control-label" for="debit">Debit card</label>
-                    </div>
-                    <div class="custom-control custom-radio">
-                        <input id="paypal" name="paymentMethod" type="radio" class="custom-control-input" required>
-                        <label class="custom-control-label" for="paypal">PayPal</label>
-                    </div>
-                </div>
+                <h4 class="mb-3">Pagamento</h4>
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="cc-name">Name on card</label>
-                        <input type="text" class="form-control" id="cc-name" placeholder="" required>
-                        <small class="text-muted">Full name as displayed on card</small>
+                        <label for="card-name">Nome</label>
+                        <input type="text" class="form-control" name="card[name]" id="card-name" value="Marcia Lima" required
+                        <small class="text-muted">Nome impresso no cartão</small>
                         <div class="invalid-feedback">
                             Name on card is required
                         </div>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="cc-number">Credit card number</label>
-                        <input type="text" class="form-control" id="cc-number" placeholder="" required>
+                        <label for="card-number">Número do cartão</label>
+                        <input type="text" class="form-control" name="card[number]" id="card-number" value="4242424242424242" required>
                         <div class="invalid-feedback">
                             Credit card number is required
                         </div>
@@ -162,17 +197,27 @@ include(__DIR__ . '/../Layout/head.php'); ?>
                 </div>
                 <div class="row">
                     <div class="col-md-3 mb-3">
-                        <label for="cc-expiration">Expiration</label>
-                        <input type="text" class="form-control" id="cc-expiration" placeholder="" required>
+                        <label for="card-expiration">Vencimento</label>
+                        <input type="text" class="form-control" name="card[expiration]" id="card-expiration" value="10/01" required>
                         <div class="invalid-feedback">
                             Expiration date required
                         </div>
                     </div>
                     <div class="col-md-3 mb-3">
-                        <label for="cc-cvv">CVV</label>
-                        <input type="text" class="form-control" id="cc-cvv" placeholder="" required>
+                        <label for="card-cvv">CVV</label>
+                        <input type="text" class="form-control" name="card[cvv]" id="card-cvv" value="0722" required>
                         <div class="invalid-feedback">
                             Security code required
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3 d-none">
+                        <label for="card-installments">Parcelas</label>
+                        <select class="custom-select d-block w-100" name="card[installments]" id="card-installments" required>
+                            <option value=""></option>
+                            <option value="1" selected>1 parcela</option>
+                        </select>
+                        <div class="invalid-feedback">
+                            Please select a valid country.
                         </div>
                     </div>
                 </div>
