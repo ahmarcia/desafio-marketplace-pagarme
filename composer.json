@@ -32,8 +32,11 @@
         "process-timeout" : 0
     },
     "scripts": {
-        "start": "php -S localhost:8080 -t public",
-        "test": "phpunit"
+        "docker-up": "docker-compose up -d",
+        "test": "phpunit",
+        "config-settings": [
+            "php -r \"copy('config/settings-default.php', 'config/settings.php');\"",
+            "chmod -R 777 logs"
+        ]
     }
-
 }
