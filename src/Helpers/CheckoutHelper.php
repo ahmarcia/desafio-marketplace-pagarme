@@ -14,7 +14,7 @@ use \PagarMe\Sdk\SplitRule\SplitRuleCollection;
 
 class CheckoutHelper
 {
-    const SHIPPING = 4500;
+    const SHIPPING = 4200;
 
     /**
      * @var \PagarMe\Sdk\PagarMe

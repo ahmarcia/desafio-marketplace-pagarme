@@ -78,7 +78,7 @@ class CartController extends ControllerAbstract
     {
         $user = $this->session->getAuth();
         $amount = 0;
-        $shipping = 4500;
+        $shipping = 4200;
         $user['marketplace'] = $this->checkoutHelp->getItemsMarketplace($user['cart'], $amount);
         $user['seller'] = $this->checkoutHelp->getItemsSeller($user['cart'], $amount);
 
