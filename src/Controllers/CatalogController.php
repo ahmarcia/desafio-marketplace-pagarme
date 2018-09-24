@@ -46,7 +46,7 @@ class CatalogController extends ControllerAbstract
      */
     public function initialize()
     {
-        $this->Products = $this->getContainer()->Products;
+        $this->Products = $this->getContainer()['Products'];
 
         foreach ($this->Helpers as $helper) {
             $this->{$helper} = $this->getContainer()->{$helper};

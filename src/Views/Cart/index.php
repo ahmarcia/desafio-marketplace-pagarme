@@ -135,12 +135,12 @@ include(__DIR__ . '/../Layout/head.php'); ?>
                 <div class="mb-3">
                     <label for="user-genre">Sexo</label><br/>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="user[genre]" id="user-genre-f"
+                        <input class="form-check-input" type="radio" name="user[genre]" id="user-genre-f" value="F"
                                required <?= isset($user['genre']) && $user['genre'] == 'F' ? 'checked' : '' ?>>
                         <label class="form-check-label" for="user-genre-f">Feminino</label>
                     </div>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="user[genre]" id="user-genre-m"
+                        <input class="form-check-input" type="radio" name="user[genre]" id="user-genre-m" value="M"
                                required <?= isset($user['genre']) && $user['genre'] == 'M' ? 'checked' : '' ?>>
                         <label class="form-check-label" for="user-genre-m">Masculino</label>
                     </div>
@@ -238,14 +238,14 @@ include(__DIR__ . '/../Layout/head.php'); ?>
                 <div class="row">
                     <div class="col-md-3 mb-3">
                         <label for="card-expiration">Vencimento</label>
-                        <input type="text" class="form-control" name="card[expiration]" id="card-expiration" value="10/01" required>
+                        <input type="text" class="form-control" name="card[expiration]" id="card-expiration" value="1021" required>
                         <div class="invalid-feedback">
                             Expiration date required
                         </div>
                     </div>
                     <div class="col-md-3 mb-3">
                         <label for="card-cvv">CVV</label>
-                        <input type="text" class="form-control" name="card[cvv]" id="card-cvv" value="0722" required>
+                        <input type="text" class="form-control" name="card[cvv]" id="card-cvv" value="722" required>
                         <div class="invalid-feedback">
                             Security code required
                         </div>

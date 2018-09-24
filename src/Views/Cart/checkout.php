@@ -20,6 +20,7 @@ include(__DIR__ . '/../Layout/head.php'); ?>
         <p class="lead text-muted">id: <?= $transaction->getTid() ?></p>
         <p class="lead text-muted">
             R$ <?= number_format($transaction->getAmount() / 100, 2, ',', '') ?>
+        </p>
         <p class="lead text-muted">status: <?= $status[$transaction->getStatus()] ?></p>
         <p>
             <a href="/catalog" class="btn btn-primary my-2">Catalogo de produtos</a>

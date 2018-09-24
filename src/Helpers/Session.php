@@ -116,6 +116,18 @@ class Session
     }
 
     /**
+     * Remove specify value in session
+     *
+     * @param string $name Identify session
+     *
+     * @return void
+     */
+    public function killMulti($name, $key)
+    {
+        unset($_SESSION[$name][$key]);
+    }
+
+    /**
      * Destroy session
      *
      * @return void

@@ -3,7 +3,7 @@ WORKDIR "/var/www"
 
 # Install selected extensions and other stuff
 RUN apt-get update \
-    && apt-get -y --no-install-recommends install  php7.1-mysql php7.1-sqlite3 php7.1-bcmath php7.1-gd php7.1-imap php7.1-intl php7.1-phpdbg php7.1-soap php7.1-xmlrpc \
+    && apt-get -y --no-install-recommends install php7.1-bcmath php7.1-gd php7.1-imap php7.1-intl php7.1-phpdbg php7.1-soap php7.1-xmlrpc \
     && apt-get clean; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
 
 # Install git

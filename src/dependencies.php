@@ -5,9 +5,15 @@ use App\Helpers\CheckoutHelper;
 use App\Helpers\Session;
 use App\Helpers\Request;
 use App\Model\ProductsModel;
+use App\Model\SellersModel;
 use Slim\Container;
 
 $container = $app->getContainer();
+
+if ($container['settings']['displayErrorDetails']) {
+    error_reporting(E_ALL);
+    ini_set("display_errors", 1);
+}
 
 // view renderer
 $container['renderer'] = function (Container $container) {
@@ -28,7 +34,7 @@ $container['logger'] = function (Container $container) {
 
 // pagar.me
 $container['pagarme'] = function (Container $container) {
-    $apiKey = $container->settings['api_key'];
+    $apiKey = $container->settings['pagarMe']['api_key'];
 
     return new \PagarMe\Sdk\PagarMe($apiKey);
 };
@@ -39,16 +45,28 @@ $container['session'] = function () {
 };
 
 // models
-$container['Products'] = function () {
-    return new ProductsModel();
+$container['Sellers'] = function (Container $container) {
+    $Sellers = new SellersModel();
+
+    $Sellers->setCodesSplit($container->settings['pagarMe']['code_splits']);
+
+    return $Sellers;
+};
+$container['Products'] = function (Container $container) {
+    $Products = new ProductsModel();
+    $Products->setSellers($container->Sellers);
+
+    return $Products;
 };
 
 // helpers
 $container['checkoutHelp'] = function (Container $container) {
-    return new CheckoutHelper($container->pagarme);
+    return new CheckoutHelper(
+        $container->pagarme,
+        $container->logger,
+        $container->settings['pagarMe']['recipient']
+    );
 };
-
-// request
 $container['requestHelp'] = function () {
     return new Request();
 };

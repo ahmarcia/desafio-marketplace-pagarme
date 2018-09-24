@@ -8,6 +8,7 @@
 
 namespace App\Helpers;
 
+use PagarMe\Sdk\ClientException;
 use \PagarMe\Sdk\Customer\Customer;
 use \PagarMe\Sdk\SplitRule\SplitRuleCollection;
 
@@ -21,13 +22,27 @@ class CheckoutHelper
     protected $PagarMe;
 
     /**
+     * @var \Monolog\Logger
+     */
+    protected $logger;
+
+    /**
+     * Get marketplace recipient
+     *
+     * @var string
+     */
+    protected $recipient;
+
+    /**
      * CheckoutHelper constructor.
      * 
      * @param $gateway
      */
-    public function __construct($gateway)
+    public function __construct($gateway, $logger, $recipient)
     {
         $this->PagarMe = $gateway;
+        $this->logger = $logger;
+        $this->recipient = $recipient;
     }
 
     /**
@@ -38,26 +53,32 @@ class CheckoutHelper
      * @param array $user User and cart data
      * @param array $card Data payment card
      *
-     * @return \PagarMe\Sdk\Transaction\CreditCardTransaction
+     * @return \PagarMe\Sdk\Transaction\CreditCardTransaction|false
      */
     public function getTransaction($user, $card)
     {
         $amount = 0;
         $splitRule = $this->getSplitRules($user['cart'], $amount);
 
-        return $this->PagarMe->transaction()->creditCardTransaction(
-            $amount,
-            $this->createCard($card),
-            $this->createCustumer($user),
-            1,
-            true,
-            null,
-            $this->defineMetadata($user['cart']),
-            [
-                'async' => false,
-                'split_rules' => $splitRule
-            ]
-        );
+        try {
+            return $transaction = $this->PagarMe->transaction()->creditCardTransaction(
+                $amount,
+                $this->createCard($card),
+                $this->createCustumer($user),
+                1,
+                true,
+                null,
+                $this->defineMetadata($user['cart']),
+                [
+                    'async' => false,
+                    'split_rules' => $splitRule
+                ]
+            );
+        } catch (ClientException $exception) {
+            $this->logger->debug('Transaction fail ' . $exception->getMessage(), $exception->getTrace());
+
+            return false;
+        }
     }
 
     /**
@@ -72,6 +93,7 @@ class CheckoutHelper
         return $this->PagarMe->card()->create(
             $card['number'],
             $card['name'],
+            $card['expiration'],
             $card['cvv']
         );
     }
@@ -183,15 +205,13 @@ class CheckoutHelper
     }
 
     /**
-     * Get marketplace recient
-     *
-     * @todo obter a identificação da conta do arquivo de configuração
+     * Get marketplace recipient
      *
      * @return \PagarMe\Sdk\Recipient\Recipient
      */
     private function getMarketplaceRecipient()
     {
-        return $this->PagarMe->recipient()->get('re_cjlv2wcqt00ei3o6d9qeqhgl5');
+        return $this->PagarMe->recipient()->get($this->recipient);
     }
 
     /**

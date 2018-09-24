@@ -4,7 +4,6 @@ namespace App\Controllers;
 
 use App\Kernel\ControllerAbstract;
 use Interop\Container\ContainerInterface;
-
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -62,8 +61,8 @@ class CartController extends ControllerAbstract
      */
     public function initialize()
     {
-        $this->Products = $this->getContainer()->Products;
-        $this->PagarMe = $this->getContainer()->pagarme;
+        $this->Products = $this->getContainer()['Products'];
+        $this->PagarMe = $this->getContainer()['pagarme'];
 
         foreach ($this->Helpers as $helper) {
             $this->{$helper} = $this->getContainer()->{$helper};
@@ -77,7 +76,7 @@ class CartController extends ControllerAbstract
      */
     public function index()
     {
-        $user = $this->session->getAuth('User');
+        $user = $this->session->getAuth();
         $amount = 0;
         $shipping = 4500;
         $user['marketplace'] = $this->checkoutHelp->getItemsMarketplace($user['cart'], $amount);
@@ -93,7 +92,7 @@ class CartController extends ControllerAbstract
      */
     public function add(Request $request, Response $response, array $args)
     {
-        $user = $this->session->getAuth('User');
+        $user = $this->session->getAuth();
 
         if (!array_key_exists($args['id'], $user['cart'])) {
             $product = $this->Products->get($args['id']);
@@ -117,16 +116,17 @@ class CartController extends ControllerAbstract
         $card = $this->requestHelp->getData('card');
         $user = $this->requestHelp->getData('user');
         $user['cart'] = $this->session->getAuth()['cart'];
-        
-        try {
-            $transaction = $this->checkoutHelp->getTransaction($user, $card);
+        $this->session->set('User', $user);
 
+        $transaction = $this->checkoutHelp->getTransaction($user, $card);
+
+        if ($transaction != false && $transaction->getStatus() != 'refused') {
             $user['cart'] = [];
             $this->session->set('User', $user);
 
             return $this->render('cart/checkout.php', ['transaction' => $transaction]);
-        } catch (\PagarMe\Sdk\ClientException $exception) {
-            return $this->render('cart/checkout-fail.php', compact('exception'));
         }
+
+        return $this->render('cart/checkout-fail.php', ['transaction' => $transaction]);
     }
 }
