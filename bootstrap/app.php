@@ -2,8 +2,6 @@
 
 use \Slim\App;
 
-session_start();
-
 $settings = require __DIR__ . '/../config/app.php';
 $app = new App($settings);
 
