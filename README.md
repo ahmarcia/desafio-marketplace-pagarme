@@ -44,3 +44,8 @@ Verify the deployment by navigating to your server address in your preferred bro
 ```sh
 http://127.0.0.1/catalog
 ```
+
+### Additional Information
+
+Check the Trello here: [Desafio de Plataformas: Marketplace](https://trello.com/b/QNVEmWaW/desafio-de-plataformas-marketplace)
+
